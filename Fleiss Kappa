@@ -1,0 +1,11 @@
+library(irr)
+
+# Load the data from a CSV file
+data <- read.csv("C:/Users/User/Documents/metrology/attributeagreement.csv")
+
+# Calculate the Fleiss' Kappa coefficient
+kappa_result <- kappam.fleiss(data[, c("Part", "Operator.1", "Operator.2", "Operator.3")])
+
+# Print the Fleiss' Kappa coefficient to the console
+print(kappa_result$value)
+print(data)
