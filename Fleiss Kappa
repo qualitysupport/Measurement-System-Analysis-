@@ -1,11 +1,61 @@
-library(irr)
-
-# Load the data from a CSV file
 data <- read.csv("C:/Users/User/Documents/metrology/attributeagreement.csv")
 
-# Calculate the Fleiss' Kappa coefficient
-kappa_result <- kappam.fleiss(data[, c("Part", "Operator.1", "Operator.2", "Operator.3")])
+fleiss_kappa <- function(data) {
+  
+  # Number of categories
+  n_cat <- max(data)
+  
+  # Calculate P_obs
+  P_obs <- sum(data, na.rm = TRUE) / (nrow(data) * ncol(data))
+  
+  # Calculate P_j
+  P_j <- colSums(data) / (nrow(data) * ncol(data))
+  
+  # Calculate P_i
+  P_i <- rowSums(data) / (nrow(data) * ncol(data))
+  
+  # Calculate P_chance
+  P_chance <- sum(P_j^2)
+  
+  # Calculate Fleiss' kappa
+  kappa <- (P_obs - P_chance) / (1 - P_chance)
+  
+  return(kappa)
+}
 
-# Print the Fleiss' Kappa coefficient to the console
-print(kappa_result$value)
+
+kappa <- fleiss_kappa(data)
+
 print(data)
+print("Fleiss Kappa Coefficient")
+print(kappa)
+
+if (kappa >= 0.01 && kappa <= 0.20) {
+  cat("The Fleiss' Kappa coefficient indicates slight agreement.\n")
+} else if (kappa >= 0.21 && kappa <= 0.40) {
+  cat("The Fleiss' Kappa coefficient indicates fair agreement.\n")
+} else if (kappa >= 0.41 && kappa <= 0.60) {
+  cat("The Fleiss' Kappa coefficient indicates moderate agreement.\n")
+} else if (kappa >= 0.61 && kappa <= 0.80) {
+  cat("The Fleiss' Kappa coefficient indicates substantial agreement.\n")
+} else if (kappa >= 0.81 && kappa <= 1.00) {
+  cat("The Fleiss' Kappa coefficient indicates almost perfect agreement.\n")
+} else {
+  cat("The Fleiss' Kappa coefficient is out of range.\n")
+}
+
+# Get number of unique operators and parts
+num_operators <- length(unique(df$Operator))
+num_parts <- length(unique(df$Parts))
+
+# Print results
+cat(paste("Number of operators: ", num_operators, "\n"))
+cat(paste("Number of parts: ", num_parts, "\n"))
+
+
+# Calculate percentage agreement
+percent_agree <- sum(df$Rating == "Pass") / nrow(df) * 100
+
+# Print results
+cat("Percentage Agreement: ", round(percent_agree, 2), "%\n")
+
